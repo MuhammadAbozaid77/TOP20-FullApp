@@ -1,13 +1,16 @@
-import { register } from "@/services/api-services/authAPI";
+"use client";
+import { registerUser } from "@/services/actions/auth/authActions";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export function useRegister() {
+  const router = useRouter();
   const { mutate: mutateRegister, isPending: isLoading } = useMutation({
-    mutationFn: register,
-    onSuccess: (data) => {
+    mutationFn: registerUser,
+    onSuccess: () => {
       toast.success("✅ Register Successful!");
-      console.log("Registered user:", data);
+      router.push("/login");
     },
     onError: (error) => {
       toast.error(error?.error || error?.message || "Registration failed!");

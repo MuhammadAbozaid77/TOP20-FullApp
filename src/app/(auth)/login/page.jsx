@@ -1,58 +1,83 @@
 "use client";
-
-import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    const formData = new FormData(e.target);
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+    setError("");
 
-    setLoading(false);
-    if (res.error) alert(res.error);
-    else window.location.href = "/";
+    try {
+      const res = await fetch("/api/auth/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+      } else {
+        // Redirect حسب role
+        if (data.role === "admin") router.push("/admin");
+        else if (data.role === "StoreAdmin") router.push("/store/dashboard");
+        else router.push("/user");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong!");
+    }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-4"
-      >
-        <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
-        <input
-          name="email"
-          placeholder="Email"
-          type="email"
-          required
-          className="w-full border rounded-lg p-2"
-        />
-        <input
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
-          className="w-full border rounded-lg p-2"
-        />
+        {error && (
+          <div className="bg-red-100 text-red-700 p-2 rounded mb-4">
+            {error}
+          </div>
+        )}
 
-        <button
-          type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white w-full rounded-lg py-2"
-          disabled={loading}
-        >
-          {loading ? "Signing in..." : "Login"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1 font-semibold">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-semibold">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

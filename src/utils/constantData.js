@@ -2,5 +2,5 @@
 export const options = [
   { value: "User", label: "User" },
   { value: "StoreAdmin", label: "StoreAdmin" },
-  { value: "GeneralAdmin", label: "GeneralAdmin" },
+  // { value: "GeneralAdmin", label: "GeneralAdmin" },
 ];

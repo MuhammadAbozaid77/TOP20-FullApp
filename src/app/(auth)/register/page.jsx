@@ -1,57 +1,52 @@
 "use client";
-
 import { useRegister } from "@/hooks/auth/useRegister";
 import CustomSelect from "@/ui/CustomSelect";
 import Input from "@/ui/Input";
 import { options } from "@/utils/constantData";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import toast from "react-hot-toast";
+import AddImage from "/public/add.gif";
 
 export default function RegisterPage() {
+  //=====================================================================================
   const [preview, setPreview] = useState(null);
-
-  // 🧠 من hook useRegister
+  //=====================================================================================
   const { mutateRegister, isLoading } = useRegister();
-
+  //=====================================================================================
   const {
     register,
     handleSubmit,
     control,
     reset,
-    formState: { errors },
-  } = useForm();
-
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
   const onSubmit = (data) => {
-    const formData = new FormData();
-
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("role", data.role?.value || data.role);
-
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
-    }
-
-    mutateRegister(formData, {
+    data.role = data.role.value;
+    mutateRegister(data, {
       onSuccess: () => {
         reset();
         setPreview(null);
-        redirect("/login");
       },
     });
   };
-
+  //=====================================================================================
+  const disabled = isLoading || !isValid;
+  //=====================================================================================
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-mainBackground ">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md space-y-4"
       >
-        <h1 className="text-2xl font-semibold text-center mb-4">Register</h1>
+        <div></div>
+
+        <div className="flex justify-center items-center flex-col">
+          <h1 className="text-[30px] font-bold text-center mb-4 text-teal-600">
+            Register
+          </h1>
+          <Image alt="" src={AddImage} height={200} />
+        </div>
 
         {/* 🧍‍♂️ Name */}
         <Input
@@ -132,11 +127,11 @@ export default function RegisterPage() {
         {/* 🔘 Submit */}
         <button
           type="submit"
-          disabled={isLoading}
-          className={`w-full rounded-lg py-2 text-white ${
-            isLoading
-              ? "bg-indigo-400 cursor-not-allowed"
-              : "bg-indigo-500 hover:bg-indigo-600"
+          disabled={disabled}
+          className={`w-full rounded-lg py-2 text-white transition-all ${
+            disabled
+              ? "bg-teal-500 cursor-not-allowed"
+              : "bg-teal-600 hover:bg-teal-700"
           }`}
         >
           {isLoading ? "Loading..." : "Register"}

@@ -11,7 +11,7 @@ const Input = forwardRef(function Input(
         ref={ref}
         type={type}
         defaultValue={defaultValue}
-        className={`w-full p-2 rounded-md border   focus:outline-[1px] focus:outline-cyan-300 ${className}`}
+        className={`w-full p-2 rounded-md border   focus:outline-[1px] focus:outline-teal-300 ${className}`}
         {...props}
       />
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
