@@ -1,17 +1,19 @@
 import { forwardRef } from "react";
 
 const Input = forwardRef(function Input(
-  { type = "text", defaultValue = "", error, className = "", ...props },
+  { type = "text", defaultValue = "", label, error, className = "", ...props },
   ref
 ) {
   return (
     <div className="">
-      <label></label>
+      <label className="text-[12px] text-gray-500 font-semibold">{label}</label>
       <input
         ref={ref}
         type={type}
         defaultValue={defaultValue}
-        className={`w-full p-2 rounded-md border   focus:outline-[1px] focus:outline-teal-300 ${className}`}
+        className={`w-full p-2 rounded-md border   focus:outline-[1px] focus:outline-teal-300 ${className} ${
+          error ? "outline-red-500" : ""
+        }   `}
         {...props}
       />
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
