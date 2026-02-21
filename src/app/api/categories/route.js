@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDB } from "@/lib/mongo";
-import cloudinary from "@/lib/cloudinary";
 
 export async function GET() {
   try {
@@ -19,32 +18,15 @@ export async function GET() {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, imageBase64 } = body;
-
-    if (!name || name.trim() === "") {
-      return NextResponse.json(
-        { error: "Category name is required" },
-        { status: 400 }
-      );
-    }
-
-    let imageUrl = "";
-
-    // Upload image to Cloudinary إذا فيه imageBase64
-    if (imageBase64) {
-      const uploaded = await cloudinary.uploader.upload(imageBase64, {
-        folder: "categories",
-      });
-      imageUrl = uploaded.secure_url;
-    }
+    const { categoryEnglishName, categoryArabicName, categoryImage } = body;
 
     const db = await getDB();
     const result = await db.collection("categories").insertOne({
-      name: name.trim(),
-      image: imageUrl,
+      categoryEnglishName: categoryEnglishName.trim(),
+      categoryArabicName: categoryArabicName.trim(),
+      image: categoryImage,
       createdAt: new Date(),
     });
-
     return NextResponse.json({ insertedId: result.insertedId });
   } catch (err) {
     console.error("POST category error:", err);

@@ -1,5 +1,5 @@
 "use client";
-import LoginImage from "/public/login.gif";
+import LoginImage from "./../../../../public/login.gif";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -51,7 +51,7 @@ export default function LoginPage() {
           <h1 className="text-[30px] font-bold text-center mb-4 text-teal-600">
             Admin Login
           </h1>
-          <Image alt="" src={LoginImage} height={200} />
+          <Image alt="LoginImage" src={LoginImage} height={200} />
         </div>
 
         <input

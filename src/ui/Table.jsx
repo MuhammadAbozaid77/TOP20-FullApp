@@ -12,7 +12,7 @@ export function TableTOP({ children }) {
 
 export function TableHeader({ children }) {
   return (
-    <thead className="bg-sky-500 text-white h-[60px] ">
+    <thead className="bg-teal-700 text-white h-[60px] ">
       <tr>{children}</tr>
     </thead>
   );
