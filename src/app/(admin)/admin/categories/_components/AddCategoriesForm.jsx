@@ -1,8 +1,10 @@
+"use client";
 import Button from "@/ui/Button";
 import FileInput from "@/ui/FileInput";
 import Input from "@/ui/Input";
 import { useForm } from "react-hook-form";
 import useAddNewCategory from "../_hooks/useAddNewCategory";
+import useUploadFile from "@/hooks/useUploadFile";
 
 export default function AddCategoriesForm({ closeModal }) {
   const {
@@ -12,18 +14,37 @@ export default function AddCategoriesForm({ closeModal }) {
   } = useForm({ mode: "onChange" });
   //===============================================================================
   const { isLoading, mutateAddCategory } = useAddNewCategory();
+  const { isFileUploading, mutateUploadFile } = useUploadFile();
+  //===============================================================================
   const onSubmit = (data) => {
-    console.log(data);
-    mutateAddCategory(data);
-    // closeModal(); // لو عايز تقفل بعد الإضافة
+    mutateUploadFile(data?.categoryImage?.[0], {
+      onSuccess: (res) => {
+        data.categoryImage = res;
+        mutateAddCategory(data, {
+          onSuccess: () => {
+            closeModal();
+          },
+        });
+      },
+    });
   };
+  //===============================================================================
+  const isWorking = isLoading || isFileUploading;
   //===============================================================================
 
   return (
-    <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-2 ">
+    <form
+      className="flex flex-col gap-3 relative"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      {isWorking && (
+        <div className="absolute inset-0 w-full bg-gray-500/50 flex justify-center items-center p-5 rounded-md">
+          <span className="loader"></span>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-2">
         <Input
-          {...register("categoryName", {
+          {...register("categoryEnglishName", {
             required: "Category Name is required",
             minLength: {
               value: 3,
@@ -33,7 +54,20 @@ export default function AddCategoriesForm({ closeModal }) {
           label={"Category Name"}
           type="text"
           placeholder="Enter Category Name"
-          error={errors?.categoryName?.message}
+          error={errors?.categoryEnglishName?.message}
+        />
+        <Input
+          {...register("categoryArabicName", {
+            required: "Category Name is required",
+            minLength: {
+              value: 3,
+              message: "Category Name must be at least 3 characters",
+            },
+          })}
+          label={"Category Name"}
+          type="text"
+          placeholder="Enter Category Name"
+          error={errors?.categoryArabicName?.message}
         />
       </div>
 

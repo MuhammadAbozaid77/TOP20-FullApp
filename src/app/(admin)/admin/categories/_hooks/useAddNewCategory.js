@@ -4,7 +4,7 @@ import { addNewCategory } from "./categoriesServices";
 export default function useAddNewCategory() {
   const { mutate: mutateAddCategory, isPending: isLoading } = useMutation({
     mutationFn: addNewCategory,
-    mutationKey: "addNewCategory",
+    mutationKey: ["addNewCategory"],
   });
 
   return { isLoading, mutateAddCategory };
